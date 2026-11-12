@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — Mohamad Nikparvar</title>
+<meta name="robots" content="noindex">
+<style>
+  /* self-contained on purpose: this page can be shown at any address */
+  :root{--bg:#f5f6f8;--ink:#0e1116;--muted:#6b7280;--accent:#2f6bff}
+  @media (prefers-color-scheme:dark){:root{--bg:#0b0d12;--ink:#edeff3;--muted:#8b93a1;--accent:#5b8cff;color-scheme:dark}}
+  html,body{height:100%}
+  body{margin:0;display:grid;place-content:center;gap:14px;padding:24px;text-align:center;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+  .mark{justify-self:center;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;color:#fff;font:30px Georgia,serif;
+    background:linear-gradient(140deg,#9db8ff,#2f6bff 50%,#1e2a3d)}
+  h1{margin:0;font:400 44px Georgia,serif}
+  p{margin:0;color:var(--muted)}
+  a{justify-self:center;margin-top:8px;padding:12px 22px;border-radius:999px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600}
+  code{font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+  <div class="mark">MN</div>
+  <h1>This page doesn't exist.</h1>
+  <p><code>zsh: no such file or directory</code></p>
+  <a id="home" href="/">Back to the portfolio</a>
+  <script>
+    // on GitHub Pages project sites the portfolio lives under /repository-name/
+    var seg = location.pathname.split("/")[1];
+    if (/github\.io$/.test(location.hostname) && seg) document.getElementById("home").href = "/" + seg + "/";
+  </script>
+</body>
+</html>

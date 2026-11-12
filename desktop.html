@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mohamad Nikparvar — Desktop</title>
+<meta name="description" content="Mohamad Nikparvar's portfolio as a desktop: windows, a dock, a terminal and a process lab.">
+<meta name="theme-color" content="#0b0d12">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mohamad Nikparvar — Desktop mode">
+<meta property="og:description" content="My portfolio as a little operating system: windows, a dock, a terminal and a process lab.">
+<meta property="og:image" content="https://mohamadnikparvar.github.io/assets/share-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="wallpaper" aria-hidden="true"></canvas>
+  <div id="glow" aria-hidden="true"></div>
+
+  <!-- Boot screen -->
+  <div id="boot" aria-hidden="true">
+    <div class="boot-mark"></div>
+    <div class="boot-bar"><i></i></div>
+  </div>
+
+  <!-- Menu bar -->
+  <header id="menubar">
+    <div class="mb-left">
+      <button class="mb-logo" id="logoBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Main menu"></button>
+      <span class="mb-app" id="activeApp">Desktop</span>
+      <nav class="mb-links" aria-label="Quick links">
+        <button data-open="about">About</button>
+        <button data-open="work">Work</button>
+        <button data-open="process">Process Lab</button>
+        <button data-open="contact">Contact</button>
+      </nav>
+    </div>
+    <div class="mb-right">
+      <a class="mb-site" href="index.html" title="Back to the main site">← Site view</a>
+      <button class="theme-switch" id="themeBtn" role="switch" aria-checked="false" aria-label="Dark mode" title="Switch light / dark mode">
+        <svg class="ts-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>
+        <svg class="ts-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+        <span class="ts-knob"></span>
+      </button>
+      <button class="mb-icon" id="searchBtn" aria-label="Search (Ctrl or Cmd + K)"></button>
+      <span class="mb-clock" id="clock"></span>
+    </div>
+    <div class="menu" id="logoMenu" role="menu" hidden>
+      <button role="menuitem" data-open="spec">About this portfolio</button>
+      <hr>
+      <button role="menuitem" data-open="about">About me</button>
+      <button role="menuitem" data-open="experience">Experience</button>
+      <button role="menuitem" data-open="work">Case studies</button>
+      <hr>
+      <p class="menu-label">Appearance</p>
+      <button role="menuitemradio" data-theme-set="light" aria-checked="false">Light</button>
+      <button role="menuitemradio" data-theme-set="dark" aria-checked="false">Dark</button>
+      <button role="menuitemradio" data-theme-set="auto" aria-checked="false">Auto (match my device)</button>
+      <hr>
+      <button role="menuitem" id="copyEmail">Copy email address</button>
+      <button role="menuitem" id="closeAll">Close all windows</button>
+    </div>
+  </header>
+
+  <!-- Desktop -->
+  <main id="desktop" aria-label="Desktop">
+    <section id="widgets" aria-label="Widgets"></section>
+    <section id="homegrid" aria-label="Apps"></section>
+    <div id="windows"></div>
+  </main>
+
+  <!-- Dock -->
+  <nav id="dock" aria-label="Dock"><div class="dock-inner" id="dockInner"></div></nav>
+
+  <!-- Spotlight -->
+  <div id="spotlight" hidden>
+    <div class="spot-panel" role="dialog" aria-label="Search">
+      <div class="spot-input">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <input id="spotInput" type="text" placeholder="Search projects, skills, experience…" autocomplete="off" aria-label="Search">
+      </div>
+      <ul id="spotResults" role="listbox"></ul>
+    </div>
+  </div>
+
+  <div id="lightbox" role="dialog" aria-label="Image viewer" hidden>
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <button class="lb-close" aria-label="Close image">×</button>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="content.js"></script>
+  <script src="sketch.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
