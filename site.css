@@ -672,3 +672,8 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .reveal.pre{opacity:1;transform:none}
 }
+
+/* tall images (mind map) scroll inside the viewer */
+#lightbox.tall{overflow:auto;place-items:start center}
+#lightbox.tall figure{margin:40px auto}
+#lightbox.tall img{max-height:none;width:min(1100px,100%)}

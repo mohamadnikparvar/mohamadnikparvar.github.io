@@ -567,3 +567,8 @@ body.pointer #glow{opacity:1}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* tall images (mind map) scroll inside the viewer */
+#lightbox.tall{overflow:auto;place-items:start center}
+#lightbox.tall figure{margin:40px auto}
+#lightbox.tall img{max-height:none;width:min(1100px,100%)}

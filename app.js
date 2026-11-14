@@ -341,12 +341,15 @@
           <div class="results">${(c.results || []).map(r => `<div class="result"><b>${esc(r.value)}</b><small>${esc(r.label)}</small></div>`).join("")}</div>
           <section><p class="label">The problem</p><p style="margin-top:6px;max-width:62ch">${esc(c.problem)}</p></section>
           <section><p class="label" style="margin-bottom:10px">What I did</p><ol class="steps">${(c.approach || []).map(a => `<li><span>${esc(a)}</span></li>`).join("")}</ol></section>
+          ${c.mindmap ? `<section><p class="label" style="margin-bottom:10px">Scope mind map</p><div class="mm-host"></div>
+            ${c.mindmap.image ? `<button class="btn ghost" style="margin-top:12px" data-lightbox="${esc(c.mindmap.image)}" data-cap="Original mind map" data-tall>View the original mind map</button>` : ""}</section>` : ""}
           ${c.gallery?.length ? `<section><p class="label" style="margin-bottom:10px">Prototype</p>
             <div class="gallery">${c.gallery.map(g => `<button class="shot" data-lightbox="${esc(g.src)}" data-cap="${esc(g.caption)}"><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"><span>${esc(g.caption)}</span></button>`).join("")}</div></section>` : ""}
           ${c.prototype ? `<a class="btn primary proto-link" href="${esc(c.prototype.href)}" target="_blank" rel="noopener" hidden>${esc(c.prototype.label)} ↗</a>` : ""}
           <div class="chips">${(c.tags || []).map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div>
         </article>`;
         main.scrollTop = 0;
+        if (c.mindmap && window.renderMindmap) renderMindmap($(".mm-host", main), c.mindmap);
         // only show the prototype link when the file is actually there
         const pl = $(".proto-link", main);
         if (pl) fetch(pl.getAttribute("href"), { method: "HEAD" }).then(r => { if (r.ok) pl.hidden = false; }).catch(() => {});
@@ -918,15 +921,16 @@
   document.addEventListener("click", e => {
     if (!e.target.closest("#logoMenu,#logoBtn")) closeMenus();
     const o = e.target.closest("[data-open]"); if (o) openApp(o.dataset.open);
-    const L = e.target.closest("[data-lightbox]"); if (L) openLightbox(L.dataset.lightbox, L.dataset.cap);
+    const L = e.target.closest("[data-lightbox]"); if (L) openLightbox(L.dataset.lightbox, L.dataset.cap, "tall" in L.dataset);
   });
 
   /* ---------------- lightbox ---------------- */
   const lb = $("#lightbox");
-  function openLightbox(src, cap) {
+  function openLightbox(src, cap, tall) {
     const img = $("img", lb);
     img.src = src; img.alt = cap || "";
     $("figcaption", lb).textContent = cap || "";
+    lb.classList.toggle("tall", !!tall); lb.scrollTop = 0;
     lb.hidden = false;
     $(".lb-close", lb).focus();
   }

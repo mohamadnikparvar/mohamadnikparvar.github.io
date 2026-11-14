@@ -67,6 +67,7 @@ window.PORTFOLIO = {
         "Own four modules: Warehouse Management System (WMS / Inventory), Procurement, Cataloging and Warehouse Request.",
         "Rebuilt the WMS from scratch and launched the MVP in 3 months, after a previous two-year effort failed to ship it. It's now in use at Shoniz.",
         "Shipped four major releases in 8 months.",
+        "Prototyped the Procurement module (ProcureFlow) in under a week from stakeholder user stories, using AI and Odoo 19 Purchase as a reference.",
         "Own the backlog, PRDs, BRDs, user stories and acceptance criteria."
       ],
       tags: ["Scrum", "Supply chain", "WMS", "Azure DevOps"]
@@ -162,14 +163,92 @@ window.PORTFOLIO = {
         { value: "Live", label: "in use at Shoniz" },
         { value: "4", label: "major releases in 8 months" }
       ],
-      tags: ["Scrum", "WMS", "Procurement", "PRD / BRD"],
-      // Screenshots shown in the case study. Add more objects to show more.
-      gallery: [
-        { src: "assets/wms-dashboard.jpg", caption: "WMS prototype: management dashboard" },
-        { src: "assets/wms-receipts.jpg", caption: "Goods receipts with per-warehouse receipt steps" },
-        { src: "assets/wms-warehouses.jpg", caption: "Warehouse setup: one, two or three-step receipts" }
+      tags: ["Scrum", "WMS", "Procurement", "PRD / BRD"]
+    },
+    {
+      id: "wms-prototype",
+      title: "Warehouse Management System: from scope to prototype",
+      area: "Product · WMS",
+      system: "In-house product",
+      year: "2026",
+      problem: "Before building, the team and stakeholders needed one shared picture of everything a complete WMS had to do, from warehouses and tanks to mobile scanners, and a prototype people could click through before any development time was spent.",
+      approach: [
+        "Mapped the full scope with stakeholders into 8 areas and 77 features, from warehouse setup to mobile (PDA) operations and dashboards.",
+        "Designed multi-stage receipts and deliveries with quality control, quantity control, putaway and picking.",
+        "Added location and item-based physical counts with manager and finance approval.",
+        "Built a clickable prototype with 15 screens, including live tank monitoring with sensors and alerts, to validate flows with users before development."
       ],
-      prototype: { href: "prototypes/wms.html", label: "Open the WMS prototype" }
+      results: [
+        { value: "77", label: "features mapped in 8 areas" },
+        { value: "15", label: "screens in the prototype" },
+        { value: "3 months", label: "to the WMS MVP" }
+      ],
+      tags: ["Product discovery", "Scope mapping", "Prototyping", "WMS", "Quality control"],
+      // Interactive scope map (from the NotebookLM mind map). branches -> children -> items.
+      mindmap: {
+        root: "Warehouse Management System",
+        image: "assets/wms-mindmap.jpg",
+        branches: [
+          { name: "Warehouse configuration", children: [
+            { name: "Warehouse types & definitions", items: ["Warehouse type definition (tag categories)", "Type deletion only with no linked warehouses", "Type editing with warning prompt", "Warehouse definition: code, name, type, status, site, location", "Editing active warehouses only with no tasks in progress", "Warehouse deletion & deactivation rules", "Warehouse types list", "Warehouses list view"] },
+            { name: "Hierarchical locations", items: ["Location type definition", "Location type editing & deletion", "Location definition: name, parent, rules, type, environment", "Location deletion & deactivation rules", "QR barcode printing for shelves", "Location editing", "Location tree view", "Location types list"] },
+            { name: "Sites", items: ["Site definition", "Site editing & deletion only with no active warehouses"] },
+            { name: "Reason codes", items: ["Scrap reasons", "Return reasons", "Receipt cancellation reasons"] }
+          ] },
+          { name: "Inventory management", children: [
+            { name: "Inventory reports", items: ["Item & location breakdown", "System, available, reserved and forecasted stock", "Storage units & conversion rules"] },
+            { name: "Minimum stock & replenishment", items: ["Min / max planning with lead time", "In stock, low stock and out of stock statuses", "Stock rule editing & deletion"] }
+          ] },
+          { name: "Physical counts", children: [
+            { name: "Location-based counts", items: ["Warehouse list & count overview", "Active counts & history", "Count creation & assignment", "Manager approval: variance check & re-count", "Finance approval: system update & final posting", "Count history per location"] },
+            { name: "Item-based counts", items: ["Item count list", "Count creation & assignment", "Expert approval", "Finance approval", "Item count history"] }
+          ] },
+          { name: "Transfers", children: [
+            { name: "Inbound goods receipt", items: ["Transfers list", "Receipt vouchers", "Goods entry stage", "Quality control (QC) stage", "Quantity control stage", "Putaway stage", "Completed receipt items", "Receipt types: purchase, return, production, transfer"] },
+            { name: "Outbound delivery", items: ["Delivery vouchers list", "Delivery voucher creation", "Draft deliveries", "Picking stage", "Delivery & handover stage", "Completed delivery items", "Pending purchase items", "Items returned to expert", "Delivery types: sales, return to vendor, production"] }
+          ] },
+          { name: "Mobile warehouse app (PDA)", items: ["Dashboard & task management", "Location & item counts", "Quality control inspection", "Quantity control counting", "Putaway", "Picking"] },
+          { name: "Access control", items: ["Access groups", "Group members", "Feature permissions", "Site & warehouse scope", "Combined user access", "Three-layer model: role, permission, scope"] },
+          { name: "Phase two enhancements", items: ["Site & warehouse names on every screen", "Combined stock for parent locations", "System stock shown on zero counts", "Conversion rates on items", "Cataloging & request system integration", "Receipt & delivery type definitions", "Receipt actions: rework, scrap, return, approve"] },
+          { name: "Dashboards", items: ["Counts: variance & accuracy", "Receipts & deliveries: processing times & volumes", "Inventory: stock status, turnover & slow movers"] }
+        ]
+      },
+      gallery: [
+        { src: "assets/wms3-dashboard.jpg", caption: "Management dashboard" },
+        { src: "assets/wms3-tanks.jpg", caption: "Live tank monitoring with sensors and alerts" },
+        { src: "assets/wms3-qc.jpg", caption: "Quality control" },
+        { src: "assets/wms3-counts.jpg", caption: "Physical counts with approvals" },
+        { src: "assets/wms3-locations.jpg", caption: "Hierarchical locations" }
+      ],
+      prototype: { href: "prototypes/wms.html", label: "Open the WMS prototype (v3)" }
+    },
+    {
+      id: "procureflow",
+      title: "ProcureFlow: a procurement module in under a week",
+      area: "Product · Procurement",
+      system: "Prototype",
+      year: "2026",
+      problem: "Procurement was the next module at Bulut. Stakeholders needed to see and test the whole purchasing flow early, before the team committed development time.",
+      approach: [
+        "Turned stakeholders' user stories into the screens and flows of the module.",
+        "Used Odoo 19's Purchase module as a reference for proven purchasing practice: requests, RFQs, vendor quotes and purchase orders.",
+        "Built it with AI-assisted prototyping, so stakeholders could click through a working version within days.",
+        "Designed a drag-and-drop procurement board, an approval inbox, a supplier panel, a supplier list, pricing and purchasing regulations."
+      ],
+      results: [
+        { value: "< 1 week", label: "from user stories to working prototype" },
+        { value: "8", label: "screens" },
+        { value: "Odoo 19", label: "Purchase as the reference model" }
+      ],
+      tags: ["AI prototyping", "User stories", "Procurement", "Odoo 19"],
+      gallery: [
+        { src: "assets/proc-kanban.jpg", caption: "Drag-and-drop board: request → RFQ → quote → purchase order" },
+        { src: "assets/proc-dashboard.jpg", caption: "Purchasing dashboard" },
+        { src: "assets/proc-kartabl.jpg", caption: "Approval inbox" },
+        { src: "assets/proc-suppliers.jpg", caption: "Supplier list" },
+        { src: "assets/proc-pricing.jpg", caption: "Pricing" }
+      ],
+      prototype: { href: "prototypes/procurement.html", label: "Open ProcureFlow" }
     },
     {
       id: "odoo-clients",
@@ -342,7 +421,7 @@ window.PORTFOLIO = {
   ],
 
   skills: [
-    { group: "Product", items: ["Product ownership", "Backlog management", "User stories", "Acceptance criteria", "Sprint planning", "Roadmapping", "OKRs", "PRD / BRD", "Scrum"] },
+    { group: "Product", items: ["Product ownership", "Backlog management", "User stories", "Acceptance criteria", "Sprint planning", "Roadmapping", "OKRs", "PRD / BRD", "Scrum", "AI-assisted prototyping", "Scope mapping"] },
     { group: "ERP & Odoo", items: ["Odoo implementation", "Configuration & customization", "Odoo Studio", "Multi-company setup", "Data migration", "UAT", "User training", "ROI analysis"] },
     { group: "Supply chain", items: ["Inventory", "Warehouse management (WMS)", "Procurement", "Purchasing", "Manufacturing", "Sales", "POS", "CRM"] },
     { group: "Business analysis", items: ["Requirements engineering", "BPM", "As-Is / To-Be mapping", "Gap analysis", "Requirement elicitation", "Solution design"] },
