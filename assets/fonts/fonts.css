@@ -21,3 +21,11 @@
   font-display: swap;
   src: url("jetbrains-mono.woff2") format("woff2");
 }
+
+/* Persian text: Vazir by Saber Rastikerdar (SIL Open Font License 1.1, Bitstream Vera license). */
+@font-face {
+  font-family: "Vazir";
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("vazir.woff2") format("woff2");
+}

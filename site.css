@@ -92,8 +92,15 @@ body.sheet-open #nav{z-index:80}
 .theme-switch.on .ts-moon{opacity:0;transform:rotate(90deg)}
 .ts-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .45s cubic-bezier(.3,1.4,.5,1),background .4s}
 .theme-switch.on .ts-knob{transform:translateX(24px);background:#dfe6ff}
-::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
-::view-transition-new(root){z-index:9999}
+/* page-to-page fade (site <-> desktop mode) and the circular reveal used by the theme switch */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .35s cubic-bezier(.4,0,.2,1) both}
+::view-transition-new(root){animation:vtIn .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes vtOut{to{opacity:0;transform:scale(.985)}}
+@keyframes vtIn{from{opacity:0;transform:scale(1.015)}}
+html.theme-vt::view-transition-old(root),html.theme-vt::view-transition-new(root){animation:none;mix-blend-mode:normal;transform:none}
+html.theme-vt::view-transition-new(root){z-index:9999}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
 
 /* ---- desktop-style menu bar (overrides the nav above) ---- */
 :root{--navh:50px}
@@ -302,6 +309,18 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .float-card:nth-of-type(4){animation-delay:-3s}
 @media (max-width:640px){ .dock-item.apps-btn{display:block} #dock .dock-item.desk,#dock .dock-sep{display:none} }
 
+/* ---- Persian introduction ---- */
+.fa-card{display:grid;gap:14px;padding:clamp(22px,4vw,40px);border-radius:28px;background:var(--card);border:1px solid var(--hair);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font-family:"Vazir","Vazirmatn",-apple-system,"SF Arabic","Segoe UI",Tahoma,sans-serif;line-height:2.1;font-size:1.08em}
+.fa-card .kicker{letter-spacing:0}
+.fa-card h2{font-size:clamp(30px,4.4vw,46px);font-weight:800;line-height:1.3}
+.fa-card p{color:var(--ink-2);font-size:17px;max-width:70ch}
+.fa-card .fa-sub{font-weight:600;color:var(--accent)}
+.fa-tags{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.fa-tags li{font-size:14px;font-weight:600;padding:6px 14px;border-radius:999px;background:var(--chip);color:var(--accent)}
+.fa-cta a{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap}
+.mail.phone a{color:inherit;text-decoration:none;user-select:all;-webkit-user-select:all}
+
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px;text-decoration:none;transition:transform .2s cubic-bezier(.3,1.4,.5,1),background .2s,box-shadow .2s;will-change:transform}
 .btn.primary{background:var(--ink);color:var(--bg);box-shadow:0 10px 30px -12px rgba(0,0,0,.4)}
@@ -374,8 +393,17 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .kicker{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .sec-head h2,.contact h2{font-family:var(--display);font-weight:400;font-size:clamp(38px,5.4vw,64px);letter-spacing:-.015em}
 .sec-lede{color:var(--ink-2);max-width:62ch;font-size:17px}
-.reveal.pre{opacity:0;transform:translateY(28px)}
-.reveal{transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.pre{opacity:0;transform:translateY(18px)}
+.reveal{transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+/* ---- smooth exits for panels ---- */
+@keyframes fadeOut{to{opacity:0}}
+@keyframes panelOut{to{opacity:0;transform:translateY(22px) scale(.97)}}
+@keyframes menuOut{to{opacity:0;transform:translateY(-6px) scale(.98)}}
+#modal.leaving,#palette.leaving,#lightbox.leaving,#apps.leaving,#termWrap.leaving{animation:fadeOut .23s ease forwards;pointer-events:none}
+#modal.leaving .modal-card,#palette.leaving .pal-panel,#apps.leaving .apps-grid,#termWrap.leaving .term-win{animation:panelOut .23s cubic-bezier(.4,0,1,1) forwards}
+#logoMenu.leaving{animation:menuOut .18s ease forwards;pointer-events:none}
+.carousel{scroll-behavior:smooth}
+
 .card{border-radius:22px;background:var(--card);border:1px solid var(--hair);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 
 /* about */
@@ -677,3 +705,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 #lightbox.tall{overflow:auto;place-items:start center}
 #lightbox.tall figure{margin:40px auto}
 #lightbox.tall img{max-height:none;width:min(1100px,100%)}
+
+/* Sharif card: name and degree on separate lines; hidden on small phones where it would cover the hint */
+.float-card.edu{max-width:270px}
+.float-card.edu b,.float-card.edu small{display:block}
+@media (max-width:560px){.float-card.edu{display:none}}
+
+/* Persian window */
+.fa-card .fa-contact{font-size:15px;color:var(--muted)}
+#modalWinTitle{unicode-bidi:plaintext}

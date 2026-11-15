@@ -4,6 +4,17 @@
   const P = window.PORTFOLIO;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  // the plain copies written by tools/prerender.mjs are for search engines; the interactive version replaces them
+  $$("[data-seo]").forEach(el => { if (!el.closest("#fa")) el.remove(); });
+  // smooth show/hide for panels: arrive() shows, leave() plays an exit animation and then hides
+  const motionOff = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const arrive = el => { clearTimeout(el._lt); el.classList.remove("leaving"); el.hidden = false; };
+  const leave = (el, done) => {
+    if (el.hidden || el.classList.contains("leaving")) return;
+    if (motionOff) { el.hidden = true; done?.(); return; }
+    el.classList.add("leaving");
+    el._lt = setTimeout(() => { el.hidden = true; el.classList.remove("leaving"); done?.(); }, 230);
+  };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = matchMedia("(pointer: fine)").matches;
@@ -35,7 +46,10 @@
       store.set("pf-theme", mode); paintTheme(); bg.readColors();
     };
     if (!document.startViewTransition || reduced) return apply();
-    document.startViewTransition(apply).ready.then(() => {
+    root.classList.add("theme-vt");
+    const vt = document.startViewTransition(apply);
+    vt.finished.finally(() => root.classList.remove("theme-vt"));
+    vt.ready.then(() => {
       const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
       root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
         { duration: 650, easing: "cubic-bezier(.4,0,.2,1)", pseudoElement: "::view-transition-new(root)" });
@@ -106,9 +120,9 @@
   /* menu bar: MN menu, clock */
   const logoBtn = $("#logoBtn"), logoMenu = $("#logoMenu");
   logoBtn.textContent = P.profile.initials;
-  const closeMenu = () => { logoMenu.hidden = true; logoBtn.setAttribute("aria-expanded", "false"); };
-  const openMenu = () => { logoMenu.hidden = false; logoBtn.setAttribute("aria-expanded", "true"); paintTheme(); $("button", logoMenu)?.focus(); };
-  logoBtn.addEventListener("click", e => { e.stopPropagation(); logoMenu.hidden ? openMenu() : closeMenu(); });
+  const closeMenu = () => { leave(logoMenu); logoBtn.setAttribute("aria-expanded", "false"); };
+  const openMenu = () => { arrive(logoMenu); logoBtn.setAttribute("aria-expanded", "true"); paintTheme(); $("button", logoMenu)?.focus(); };
+  logoBtn.addEventListener("click", e => { e.stopPropagation(); (logoMenu.hidden || logoMenu.classList.contains("leaving")) ? openMenu() : closeMenu(); });
   document.addEventListener("click", e => { if (!e.target.closest("#logoMenu,#logoBtn")) closeMenu(); });
   logoMenu.addEventListener("keydown", e => {
     const items = $$("button", logoMenu), i = items.indexOf(document.activeElement);
@@ -126,6 +140,7 @@
     else if (b.dataset.act === "spec") openSpec();
     else if (b.dataset.act === "terminal") openTerm();
     else if (b.dataset.act === "closeall") closeAll();
+    else if (b.dataset.act === "fa") openFa();
   });
   const clock = $("#clock");
   const tickClock = () => { clock.textContent = new Date().toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).replace(",", ""); };
@@ -439,16 +454,16 @@
   }
   function showModal(title) {
     resetWin("modal"); $("#modalWinTitle").textContent = title;
-    modal.hidden = false; document.body.style.overflow = "hidden";
+    arrive(modal); document.body.style.overflow = "hidden";
     $(".modal-card", modal).scrollTop = 0; $("#modalX").focus();
   }
-  function closeModal() { if (modal.hidden) return; unRun("modal"); modal.hidden = true; document.body.style.overflow = ""; lastFocus?.focus?.(); }
+  function closeModal() { if (modal.hidden) return; unRun("modal"); leave(modal, () => { document.body.style.overflow = ""; }); lastFocus?.focus?.(); }
   $("#modalX").addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
 
   const lb = $("#lightbox");
-  function openLightbox(src, cap, tall) { const img = $("img", lb); img.src = src; img.alt = cap || ""; $("figcaption", lb).textContent = cap || ""; lb.classList.toggle("tall", !!tall); lb.scrollTop = 0; lb.hidden = false; $(".lb-close", lb).focus(); }
-  function closeLightbox() { if (lb.hidden) return; lb.hidden = true; $("img", lb).removeAttribute("src"); }
+  function openLightbox(src, cap, tall) { const img = $("img", lb); img.src = src; img.alt = cap || ""; $("figcaption", lb).textContent = cap || ""; lb.classList.toggle("tall", !!tall); lb.scrollTop = 0; arrive(lb); $(".lb-close", lb).focus(); }
+  function closeLightbox() { if (lb.hidden) return; leave(lb, () => $("img", lb).removeAttribute("src")); }
   lb.addEventListener("click", e => { if (!e.target.closest("img")) closeLightbox(); });
   document.addEventListener("click", e => { const L = e.target.closest("[data-lightbox]"); if (L) openLightbox(L.dataset.lightbox, L.dataset.cap, "tall" in L.dataset); });
 
@@ -754,10 +769,29 @@
   /* ---------------- contact + footer ---------------- */
   $("#contactRow").innerHTML = `${p.location ? `<span class="loc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>${esc(p.location)}</span>` : ""}
     <span class="mail"><span>${esc(p.email)}</span><button class="btn primary small" id="cCopy">Copy</button></span>
+    ${p.phone ? `<span class="mail phone"><a href="tel:${esc(p.phone.replace(/\s/g, ""))}" dir="ltr">${esc(p.phone)}</a><button class="btn primary small" id="pCopy">Copy</button></span>` : ""}
     <a class="btn ghost" href="${esc(p.linkedin)}" target="_blank" rel="noopener">LinkedIn ↗</a>
     ${p.github ? `<a class="btn ghost" href="${esc(p.github)}" target="_blank" rel="noopener">GitHub ↗</a>` : ""}
     ${p.cv ? `<a class="btn ghost" href="${esc(p.cv)}" target="_blank" rel="noopener">CV (PDF) ↗</a>` : ""}`;
   $("#cCopy").addEventListener("click", () => copy(p.email, "Email copied"));
+  $("#pCopy")?.addEventListener("click", () => copy(p.phone, "Phone number copied"));
+
+  /* ---------------- Persian introduction ---------------- */
+  // Not shown on the page: it opens as a window from the MN menu, search or the phone app grid.
+  // The hidden copy in #fa (written by tools/prerender.mjs) stays in the page for search engines.
+  function openFa() {
+    if (!P.fa) return;
+    lastFocus = document.activeElement;
+    mBody.innerHTML = `<div class="fa-card" lang="fa" dir="rtl">
+      <p class="kicker">معرفی به فارسی</p>
+      <h2 id="modalTitle">${esc(P.fa.title)}</h2><p class="fa-sub">${esc(P.fa.subtitle)}</p>
+      ${P.fa.paragraphs.map(t => `<p>${esc(t)}</p>`).join("")}
+      <ul class="fa-tags">${P.fa.services.map(s => `<li>${esc(s)}</li>`).join("")}</ul>
+      <p class="fa-cta">${esc(P.fa.cta)}</p>
+      <p class="fa-contact"><span dir="ltr">${esc(p.phone || "")}</span> · <span dir="ltr">${esc(p.email)}</span></p>
+    </div>`;
+    showModal("فارسی · Persian");
+  }
   $("#year").textContent = new Date().getFullYear();
 
   /* ---------------- "About this portfolio" (in the MN menu) ---------------- */
@@ -824,11 +858,11 @@
     const r = f(); if (r != null) tprint(r);
   };
   function openTerm() {
-    closeMenu(); termWrap.hidden = false;
+    closeMenu(); arrive(termWrap);
     if (!termBooted) { termBooted = true; tprint(`<span class="m">Last login: ${new Date().toDateString()} on ttys001</span>\nWelcome. Type <span class="y">help</span> to see what you can ask.`); }
     setTimeout(() => termIn.focus(), 30);
   }
-  function closeTerm() { termWrap.hidden = true; }
+  function closeTerm() { leave(termWrap); }
   termIn.addEventListener("keydown", e => {
     if (e.key === "Enter") { texec(termIn.value); termIn.value = ""; }
     else if (e.key === "ArrowUp" && hi > 0) { termIn.value = hist[--hi]; e.preventDefault(); }
@@ -862,7 +896,7 @@
     }, reduced ? 0 : 400);
   }
   function restore(id) {
-    const w = WIN[id]; unRun(id); w.wrap.hidden = false; if (id === "modal") document.body.style.overflow = "hidden";
+    const w = WIN[id]; unRun(id); arrive(w.wrap); if (id === "modal") document.body.style.overflow = "hidden";
     w.card.animate([{ opacity: 0, scale: .85 }, { opacity: 1, scale: 1 }], { duration: reduced ? 1 : 300, easing: "cubic-bezier(.2,.9,.3,1.1)" });
     if (id === "term") setTimeout(() => termIn.focus(), 30);
   }
@@ -893,21 +927,24 @@
     { label: "Phase game", glyph: '<path d="M9 3h6v4a2 2 0 1 0 0 4v4H9v-4a2 2 0 1 0 0-4z"/><path d="M5 15h14v6H5z"/>', run: () => { go2("methodology")(); $('[data-mt="game"]')?.click(); } },
     { label: "Terminal", glyph: WIN.term.glyph, run: () => openTerm() },
     { label: "About this portfolio", glyph: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/>', run: () => openSpec() },
+    ...(P.fa ? [{ label: "فارسی", glyph: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/>', run: () => openFa() }] : []),
     { label: "Desktop mode", glyph: GLYPH.desktop, run: () => { location.href = "desktop.html"; } }
   ];
   function go2(id) { return () => document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); }
   appsGrid.innerHTML = APP_GRID.map((a, i) => `<button class="app" role="menuitem" data-app="${i}" style="animation-delay:${i * 25}ms"><span class="dock-icon"><svg viewBox="0 0 24 24">${a.glyph}</svg></span><span>${esc(a.label)}</span></button>`).join("");
-  function closeApps() { apps.hidden = true; }
+  function closeApps() { leave(apps); }
   appsGrid.addEventListener("click", e => { const b = e.target.closest("[data-app]"); if (!b) return; closeApps(); APP_GRID[+b.dataset.app].run(); });
   apps.addEventListener("click", e => { if (e.target === apps) closeApps(); });
   dockIn.insertAdjacentHTML("afterbegin", `<a class="dock-item apps-btn" href="#" aria-label="All sections"><span class="dock-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></span><span class="tip">All sections</span></a>`);
-  $(".apps-btn", dockIn).addEventListener("click", e => { e.preventDefault(); apps.hidden ? (apps.hidden = false) : closeApps(); });
+  $(".apps-btn", dockIn).addEventListener("click", e => { e.preventDefault(); apps.hidden ? arrive(apps) : closeApps(); });
 
   /* ---------------- command palette ---------------- */
   const pal = $("#palette"), palIn = $("#palInput"), palList = $("#palList");
   const go = id => () => document.getElementById(id)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
   const ITEMS = [
     ...[["about", "About"], ["experience", "Experience"], ["work", "Case studies"], ["methodology", "Odoo methodology"], ["research", "Research"], ["services", "Services"], ["contact", "Contact"]].map(([id, t]) => ({ t, s: "Section", run: go(id) })),
+    ...(P.fa ? [{ t: "فارسی · Persian introduction", s: "Panel", run: () => openFa() }] : []),
+    ...(p.phone ? [{ t: "Copy phone number", s: "Action", run: () => copy(p.phone, "Phone number copied") }] : []),
     ...cases.map(c => ({ t: c.title, s: "Case study", k: [c.area, c.system, c.problem, ...(c.approach || []), ...(c.tags || [])].join(" "), run: () => openCase(c.id) })),
     ...(S?.items || []).map(s => ({ t: s.name, s: "Service", k: [s.tagline, s.text, ...s.points].join(" "), run: go("services") })),
     ...(P.methodology?.phases || []).map(ph => ({ t: ph.name, s: "Methodology phase", k: ph.tasks.join(" "), run: go("methodology") })),
@@ -934,8 +971,8 @@
     res = q ? [...ITEMS.filter(i => (i.t + " " + i.s).toLowerCase().includes(q)), ...ITEMS.filter(i => !(i.t + " " + i.s).toLowerCase().includes(q) && (i.k || "").toLowerCase().includes(q))].slice(0, 12) : ITEMS.slice(0, 9); sel = 0;
     palList.innerHTML = res.length ? res.map((r, i) => `<li data-i="${i}" class="${i === 0 ? "sel" : ""}" role="option" aria-selected="${i === 0}"><span>${esc(r.t)}</span><small>${esc(r.s)}</small></li>`).join("") : `<li><small>No results</small></li>`;
   };
-  const openPal = () => { pal.hidden = false; palIn.value = ""; drawPal(); setTimeout(() => palIn.focus(), 10); };
-  const closePal = () => { pal.hidden = true; };
+  const openPal = () => { arrive(pal); palIn.value = ""; drawPal(); setTimeout(() => palIn.focus(), 10); };
+  const closePal = () => { leave(pal); };
   const runPal = i => { const r = res[i]; if (!r) return; closePal(); r.run(); };
   $("#searchBtn").addEventListener("click", openPal);
   palIn.addEventListener("input", drawPal);

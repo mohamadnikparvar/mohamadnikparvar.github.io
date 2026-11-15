@@ -92,8 +92,23 @@ p{margin:0}
 .theme-switch:hover .ts-knob{box-shadow:0 1px 3px rgba(0,0,0,.3),0 0 0 4px rgba(255,255,255,.25)}
 
 /* circular reveal when switching theme */
-::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
-::view-transition-new(root){z-index:9999}
+/* page-to-page fade (site <-> desktop mode) and the circular reveal used by the theme switch */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .35s cubic-bezier(.4,0,.2,1) both}
+::view-transition-new(root){animation:vtIn .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes vtOut{to{opacity:0;transform:scale(.985)}}
+@keyframes vtIn{from{opacity:0;transform:scale(1.015)}}
+html.theme-vt::view-transition-old(root),html.theme-vt::view-transition-new(root){animation:none;mix-blend-mode:normal;transform:none}
+html.theme-vt::view-transition-new(root){z-index:9999}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
+/* ---- smooth exits for panels ---- */
+@keyframes fadeOut{to{opacity:0}}
+@keyframes panelOut{to{opacity:0;transform:translateY(16px) scale(.97)}}
+@keyframes menuOut{to{opacity:0;transform:translateY(-6px) scale(.98)}}
+#spotlight.leaving,#lightbox.leaving{animation:fadeOut .22s ease forwards;pointer-events:none}
+#spotlight.leaving .spot-panel{animation:panelOut .22s cubic-bezier(.4,0,1,1) forwards}
+#logoMenu.leaving{animation:menuOut .18s ease forwards;pointer-events:none}
+
 @keyframes pop{from{opacity:0;transform:translateY(-4px) scale(.98)}}
 
 /* ---------- desktop ---------- */
@@ -572,3 +587,14 @@ body.pointer #glow{opacity:1}
 #lightbox.tall{overflow:auto;place-items:start center}
 #lightbox.tall figure{margin:40px auto}
 #lightbox.tall img{max-height:none;width:min(1100px,100%)}
+
+/* Persian introduction in the About window */
+.fa-box{display:grid;gap:6px;padding:14px 16px;border-radius:14px;background:var(--soft);border:1px solid var(--hair);font-family:"Vazir","Vazirmatn",-apple-system,"SF Arabic","Segoe UI",Tahoma,sans-serif;line-height:2;font-size:1.08em}
+.fa-box b{font-size:17px}
+.fa-box small{color:var(--accent);font-weight:600}
+.fa-box p{color:var(--ink-2);font-size:13.5px;margin:0}
+.fa-box .chips{margin-top:4px}
+
+.fa-box.fa-win{margin-top:6px;background:none;border:0;padding:4px 0}
+.fa-box.fa-win b{font-size:24px}
+.fa-box.fa-win p{font-size:15px}

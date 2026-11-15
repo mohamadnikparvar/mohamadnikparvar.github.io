@@ -20,11 +20,13 @@ window.PORTFOLIO = {
     bio: [
       "Studying Industrial Engineering at Sharif University of Technology made me love how businesses work. When I discovered Odoo, I found the place where that interest and my software background meet, and I moved into ERP.",
       "What I enjoy most is analyzing a business, finding the real problem, and turning a difficult situation into something simple. I also love leading teams and helping people achieve more than they thought they could.",
-      "Today I'm a Product Owner at Bulut, where I lead supply chain product development. Part-time, I lead Odoo implementation for Elison (Huger Holding), and I run my own Odoo team for clients across Iran. My MBA thesis studied what makes ERP rollouts succeed, and I'm about to start a PhD in management."
+      "Today I'm a Product Owner at Bulut, where I lead supply chain product development. Part-time, I lead Odoo implementation for Elison (Huger Holding), and I run my own Odoo team for clients across Iran. My MBA thesis studied what makes ERP rollouts succeed, and I'm preparing for the PhD entrance exam in management."
     ],
     photo: "assets/photo.jpg",            // Empty = initials avatar.
     sketch: "assets/photo-sketch.png",    // Pencil version. After changing the photo, run: python3 tools/make_sketch.py
     email: "muhammad10nikparvar@gmail.com",
+    phone: "+98 914 850 2709",            // shown in Contact; set to "" to hide
+    website: "https://mohamadnikparvar.github.io",
     linkedin: "https://www.linkedin.com/in/mohamad-nikparvar-5214aa209/",
     github: "https://github.com/mohamadnikparvar",
     cv: "cv.pdf"                          // Empty = button hidden.
@@ -421,7 +423,7 @@ window.PORTFOLIO = {
   ],
 
   skills: [
-    { group: "Product", items: ["Product ownership", "Backlog management", "User stories", "Acceptance criteria", "Sprint planning", "Roadmapping", "OKRs", "PRD / BRD", "Scrum", "AI-assisted prototyping", "Scope mapping"] },
+    { group: "Product", items: ["Product ownership", "Backlog management", "User stories", "Acceptance criteria", "Project management", "Sprint planning", "Roadmapping", "OKRs", "PRD / BRD", "Scrum", "AI-assisted prototyping", "Scope mapping"] },
     { group: "ERP & Odoo", items: ["Odoo implementation", "Configuration & customization", "Odoo Studio", "Multi-company setup", "Data migration", "UAT", "User training", "ROI analysis"] },
     { group: "Supply chain", items: ["Inventory", "Warehouse management (WMS)", "Procurement", "Purchasing", "Manufacturing", "Sales", "POS", "CRM"] },
     { group: "Business analysis", items: ["Requirements engineering", "BPM", "As-Is / To-Be mapping", "Gap analysis", "Requirement elicitation", "Solution design"] },
@@ -444,8 +446,29 @@ window.PORTFOLIO = {
       field: "Finance",
       period: "2023 — 2026",
       note: "Thesis: a model of the drivers of ERP implementation, based on a survey of 250 managers and users at Shoniz."
+    },
+    {
+      school: "PhD in Management",
+      place: "Iran",
+      degree: "Next step",
+      field: "",
+      period: "Entrance exam now · starting 2027",
+      note: "Preparing for the national PhD entrance exam in management, to continue researching how organizations adopt ERP."
     }
   ],
+
+  // Persian section (helps people find the site when searching in Persian)
+  fa: {
+    title: "سید محمد نیک‌پرور",
+    subtitle: "مالک محصول، تحلیلگر کسب‌وکار و سرپرست تیم استقرار اودو (Odoo)",
+    paragraphs: [
+      "سید محمد نیک‌پرور هستم؛ مالک محصول (Product Owner) و سرپرست تیم استقرار اودو. در استقرار ای‌آر‌پی (ERP) و سیستم مدیریت جامع سازمان، مدیریت پروژه، تحلیل کسب‌وکار و زنجیره تأمین کار می‌کنم.",
+      "استقرار اودو در ۸ شرکت هلدینگ در امارات، عربستان، عراق و پاکستان را در ۳ ماه به نتیجه رساندم؛ با بیش از ۱۰۰ کاربر فعال و صرفه‌جویی سالانهٔ ۳۰ هزار دلار. در شرکت بولوت، سیستم مدیریت انبار (WMS) را که دو سال متوقف مانده بود، در ۳ ماه به نسخهٔ اول رساندیم و اکنون در شونیز استفاده می‌شود.",
+      "فارغ‌التحصیل مهندسی صنایع از دانشگاه صنعتی شریف و کارشناسی ارشد مدیریت کسب‌وکار هستم. پایان‌نامه‌ام دربارهٔ پیشران‌های استقرار موفق ERP بوده و برای دکتری مدیریت آماده می‌شوم."
+    ],
+    services: ["استقرار کامل اودو", "مشاورهٔ ساعتی اودو", "آموزش ماژول‌های اودو", "مدیریت پروژهٔ استقرار ای‌آر‌پی", "تحلیل و بازطراحی فرآیندها"],
+    cta: "برای پروژه‌های استقرار اودو و ای‌آر‌پی در ایران و منطقه، با من در تماس باشید."
+  },
 
   honors: [
     { title: "Top 1% in Iran's national university entrance exam (Konkur)", detail: "Mathematics and Physics, among more than 130,000 candidates", year: "2017" }

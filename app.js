@@ -29,7 +29,8 @@
     spec: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/>',
     methodology: '<path d="M3.5 19h4.5v-4.5h4v-4.5h4V5.5h4.5"/><circle cx="3.5" cy="19" r="1.2"/><path d="m17.5 3.5 2.5 2-2.5 2"/>',
     services: '<path d="M12 3.5 3 8l9 4.5L21 8z"/><path d="m3 12.2 9 4.5 9-4.5M3 16.3l9 4.5 9-4.5"/>',
-    research: '<path d="M9.5 3.5h5M10.5 3.5v5.2L5 18.2A1.6 1.6 0 0 0 6.4 20.5h11.2a1.6 1.6 0 0 0 1.4-2.3l-5.5-9.5V3.5"/><path d="M7.4 14.5h9.2"/>'
+    research: '<path d="M9.5 3.5h5M10.5 3.5v5.2L5 18.2A1.6 1.6 0 0 0 6.4 20.5h11.2a1.6 1.6 0 0 0 1.4-2.3l-5.5-9.5V3.5"/><path d="M7.4 14.5h9.2"/>',
+    fa: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/>'
   };
   const UI = {
     search: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>',
@@ -53,7 +54,9 @@
     education:  { title: "Education",    g: ["#5279ea", "#1b2f80"], w: 540, h: 540 },
     terminal:   { title: "Terminal",     g: ["#4a5262", "#0e1218"], w: 660, h: 430, flush: true, sep: true },
     contact:    { title: "Contact",      g: ["#ff8a6b", "#d4495a"], w: 480, h: 460, phone: true },
-    spec:       { title: "About This Portfolio", g: ["#9aa2b2", "#4a5262"], w: 440, h: 520, hidden: true }
+    spec:       { title: "About This Portfolio", g: ["#9aa2b2", "#4a5262"], w: 440, h: 520, hidden: true },
+    // Persian introduction: not in the dock, only in the MN menu and Spotlight
+    fa:         { title: "فارسی · Persian", g: ["#5b8cff", "#1e2a3d"], w: 560, h: 560, hidden: true }
   };
   const icon = id => `<span class="app-icon" style="background:linear-gradient(150deg,${APPS[id].g[0]},${APPS[id].g[1]})"><svg viewBox="0 0 24 24">${GLYPH[id]}</svg></span>`;
   // Photo (or initials) inside a slowly rotating glass ring. Tilts toward the pointer.
@@ -588,6 +591,7 @@
         <h3>Let's talk.</h3>
         <p style="color:var(--ink-2)">${esc(p.available || "Happy to hear about product, BA and ERP roles.")}</p>
         <div class="c-row"><span class="k">Email</span><span class="v" id="cEmail">${esc(p.email)}</span><button class="btn ghost" id="cCopy">Copy</button></div>
+        ${p.phone ? `<div class="c-row"><span class="k">Phone</span><a class="v" href="tel:${esc(p.phone.replace(/\s/g, ""))}" dir="ltr">${esc(p.phone)}</a><button class="btn ghost" id="pCopy">Copy</button></div>` : ""}
         <div class="c-row"><span class="k">LinkedIn</span><a class="v" href="${esc(p.linkedin)}" target="_blank" rel="noopener">View profile ↗</a></div>
         ${p.github ? `<div class="c-row"><span class="k">GitHub</span><a class="v" href="${esc(p.github)}" target="_blank" rel="noopener">${esc(p.github.replace(/^https?:\/\//, ""))} ↗</a></div>` : ""}
         ${p.location ? `<div class="c-row"><span class="k">Location</span><span class="v">${esc(p.location)}</span></div>` : ""}
@@ -599,6 +603,22 @@
         if (navigator.clipboard?.writeText) navigator.clipboard.writeText(p.email).then(() => toast("Copied", p.email), fallback);
         else fallback();
       });
+      $("#pCopy", body)?.addEventListener("click", () => {
+        if (navigator.clipboard?.writeText) navigator.clipboard.writeText(p.phone).then(() => toast("Copied", p.phone), () => toast("Phone", p.phone));
+        else toast("Phone", p.phone);
+      });
+    },
+
+    fa(body) {
+      const p = P.profile, F = P.fa;
+      if (!F) { body.innerHTML = "<p>Add a Persian introduction in content.js.</p>"; return; }
+      body.innerHTML = `<div class="fa-box fa-win" lang="fa" dir="rtl">
+        <p class="label">معرفی به فارسی</p><b>${esc(F.title)}</b><small>${esc(F.subtitle)}</small>
+        ${F.paragraphs.map(t => `<p>${esc(t)}</p>`).join("")}
+        <div class="chips">${F.services.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
+        <p>${esc(F.cta)}</p>
+        <p style="color:var(--muted)"><span dir="ltr">${esc(p.phone || "")}</span> · <span dir="ltr">${esc(p.email)}</span></p>
+      </div>`;
     },
 
     spec(body) {
@@ -885,6 +905,7 @@
     ...P.education.map(e => ({ t: e.school, s: `Education · ${e.degree}`, app: "education", k: [e.school, e.degree, e.field].join(" ") })),
     ...P.processes.map(p => ({ t: p.name, s: "Process Lab", app: "process", k: p.name + " process bpmn" })),
     ...(P.methodology?.phases || []).map(p => ({ t: p.name, s: "Odoo methodology", app: "methodology", k: [p.name, ...p.tasks, "methodology odoo implementation"].join(" ") })),
+    ...(P.fa ? [{ t: "فارسی · Persian introduction", s: "Window", app: "fa", k: [P.fa.title, P.fa.subtitle, ...P.fa.paragraphs, ...P.fa.services, "persian farsi فارسی"].join(" ") }] : []),
     ...(P.research ? [{ t: P.research.title, s: "Research · Master's thesis", app: "research", k: [P.research.title, P.research.formalTitle, P.research.summary, P.research.insight, ...P.research.methods, "thesis research mba erp success"].join(" ") }] : []),
     ...(P.services?.items || []).map(s => ({ t: s.name, s: `Work with me · ${s.pricing}`, app: "services", k: [s.name, s.tagline, s.text, ...s.points, "services hire price"].join(" ") }))
   ];
@@ -901,8 +922,16 @@
     $$("li[data-i]", spotRes).forEach((li, i) => { li.classList.toggle("sel", i === sel); li.setAttribute("aria-selected", i === sel); if (i === sel) li.scrollIntoView({ block: "nearest" }); });
   }
   function pick(i) { const r = results[i]; if (!r) return; closeSpot(); openApp(r.app, r.go); }
-  function openSpot() { closeMenus(); spot.hidden = false; spotIn.value = ""; renderSpot(); setTimeout(() => spotIn.focus(), 10); }
-  function closeSpot() { if (!spot.hidden) spot.hidden = true; }
+  // smooth show/hide for panels (same as the main site)
+  const arrive = el => { clearTimeout(el._lt); el.classList.remove("leaving"); el.hidden = false; };
+  const leave = (el, done) => {
+    if (el.hidden || el.classList.contains("leaving")) return;
+    if (reduced) { el.hidden = true; done?.(); return; }
+    el.classList.add("leaving");
+    el._lt = setTimeout(() => { el.hidden = true; el.classList.remove("leaving"); done?.(); }, 220);
+  };
+  function openSpot() { closeMenus(); arrive(spot); spotIn.value = ""; renderSpot(); setTimeout(() => spotIn.focus(), 10); }
+  function closeSpot() { leave(spot); }
   spotIn.addEventListener("input", renderSpot);
   spotIn.addEventListener("keydown", e => {
     if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
@@ -916,8 +945,8 @@
   /* ---------------- menu bar ---------------- */
   const logoBtn = $("#logoBtn"), logoMenu = $("#logoMenu");
   logoBtn.textContent = P.profile.initials;
-  function closeMenus() { logoMenu.hidden = true; logoBtn.setAttribute("aria-expanded", "false"); }
-  logoBtn.addEventListener("click", e => { e.stopPropagation(); const open = logoMenu.hidden; logoMenu.hidden = !open; logoBtn.setAttribute("aria-expanded", open); });
+  function closeMenus() { leave(logoMenu); logoBtn.setAttribute("aria-expanded", "false"); }
+  logoBtn.addEventListener("click", e => { e.stopPropagation(); const open = logoMenu.hidden || logoMenu.classList.contains("leaving"); open ? arrive(logoMenu) : leave(logoMenu); logoBtn.setAttribute("aria-expanded", open); });
   document.addEventListener("click", e => {
     if (!e.target.closest("#logoMenu,#logoBtn")) closeMenus();
     const o = e.target.closest("[data-open]"); if (o) openApp(o.dataset.open);
@@ -931,10 +960,10 @@
     img.src = src; img.alt = cap || "";
     $("figcaption", lb).textContent = cap || "";
     lb.classList.toggle("tall", !!tall); lb.scrollTop = 0;
-    lb.hidden = false;
+    arrive(lb);
     $(".lb-close", lb).focus();
   }
-  function closeLightbox() { if (lb.hidden) return; lb.hidden = true; $("img", lb).removeAttribute("src"); }
+  function closeLightbox() { if (lb.hidden) return; leave(lb, () => $("img", lb).removeAttribute("src")); }
   lb.addEventListener("click", e => { if (!e.target.closest("img")) closeLightbox(); });
   $("#closeAll").addEventListener("click", () => { closeMenus(); [...wins.values()].forEach(closeWin); });
   $("#copyEmail").addEventListener("click", () => {
@@ -967,7 +996,9 @@
       paintThemeBtn(); wallpaper.readColors();
     };
     if (!document.startViewTransition || reduced) return apply();
+    root.classList.add("theme-vt");
     const vt = document.startViewTransition(apply);
+    vt.finished.finally(() => root.classList.remove("theme-vt"));
     vt.ready.then(() => {
       const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
       root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
