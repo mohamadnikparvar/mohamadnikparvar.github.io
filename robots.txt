@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mohamadnikparvar.github.io/sitemap.xml
+Sitemap: https://mohamadnikparvar.ir/sitemap.xml

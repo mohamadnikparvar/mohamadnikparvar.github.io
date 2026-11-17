@@ -26,7 +26,7 @@ window.PORTFOLIO = {
     sketch: "assets/photo-sketch.png",    // Pencil version. After changing the photo, run: python3 tools/make_sketch.py
     email: "muhammad10nikparvar@gmail.com",
     phone: "+98 914 850 2709",            // shown in Contact; set to "" to hide
-    website: "https://mohamadnikparvar.github.io",
+    website: "https://mohamadnikparvar.ir",
     linkedin: "https://www.linkedin.com/in/mohamad-nikparvar-5214aa209/",
     github: "https://github.com/mohamadnikparvar",
     cv: "cv.pdf"                          // Empty = button hidden.
