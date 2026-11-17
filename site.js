@@ -61,16 +61,10 @@
   /* ---------------- background ---------------- */
   const bg = (() => {
     const c = $("#bg"), ctx = c.getContext("2d");
-    let W = 0, H = 0, cols = {}, tile = null, raf = 0, last = 0;
+    let W = 0, H = 0, cols = {}, raf = 0, last = 0;
+    const net = window.NetBG ? NetBG() : null;
     const css = n => getComputedStyle(root).getPropertyValue(n).trim();
     const rgba0 = hex => { const h = hex.replace("#", ""), n = parseInt(h.length === 3 ? h.replace(/./g, "$&$&") : h, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},0)`; };
-    function makeTile(stroke) {
-      const s = 110, t = document.createElement("canvas"); t.width = t.height = s;
-      const g = t.getContext("2d"); g.strokeStyle = stroke; g.lineWidth = 1;
-      const star = (cx, cy, r) => { g.beginPath(); g.rect(cx - r, cy - r, 2 * r, 2 * r); g.stroke(); g.save(); g.translate(cx, cy); g.rotate(Math.PI / 4); g.beginPath(); g.rect(-r, -r, 2 * r, 2 * r); g.stroke(); g.restore(); };
-      star(s / 2, s / 2, 22); [0, s].forEach(x => [0, s].forEach(y => star(x, y, 22)));
-      return ctx.createPattern(t, "repeat");
-    }
     function blob(x, y, r, col) { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, rgba0(col)); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
     function frame(t) {
       const k = t / 12000, m = Math.max(W, H);
@@ -80,10 +74,10 @@
       blob(W * (.88 + .06 * Math.cos(k * .8)), H * (.3 + .12 * Math.sin(k)), m * .45, cols.b);
       blob(W * (.55 + .1 * Math.sin(k * .7 + 2)), H * (1 + .05 * Math.cos(k)), m * .4, cols.c);
       ctx.globalAlpha = 1;
-      if (tile) { ctx.fillStyle = tile; ctx.fillRect(0, 0, W, H); }
+      net?.draw(ctx, t, isDark(), reduced);
     }
-    function size() { const d = Math.min(devicePixelRatio || 1, 1.5); W = innerWidth; H = innerHeight; c.width = W * d; c.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); frame(performance.now()); }
-    function readColors() { cols = { a: css("--wall-a"), b: css("--wall-b"), c: css("--wall-c"), base: css("--wall-base") }; tile = makeTile(isDark() ? "rgba(255,255,255,.035)" : "rgba(20,40,80,.045)"); if (W) frame(performance.now()); }
+    function size() { const d = Math.min(devicePixelRatio || 1, 1.5); W = innerWidth; H = innerHeight; c.width = W * d; c.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); net?.resize(W, H); frame(performance.now()); }
+    function readColors() { cols = { a: css("--wall-a"), b: css("--wall-b"), c: css("--wall-c"), base: css("--wall-base") }; if (W) frame(performance.now()); }
     function loop(t) { raf = requestAnimationFrame(loop); if (t - last < 42) return; last = t; frame(t); }
     addEventListener("resize", size);
     document.addEventListener("visibilitychange", () => { cancelAnimationFrame(raf); if (!document.hidden && !reduced) raf = requestAnimationFrame(loop); });

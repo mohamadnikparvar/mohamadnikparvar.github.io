@@ -1037,27 +1037,17 @@
   /* ---------------- wallpaper ---------------- */
   const wallpaper = (() => {
     const c = $("#wallpaper"), ctx = c.getContext("2d");
-    let cols = {}, W = 0, H = 0, tile = null, raf = 0;
+    let cols = {}, W = 0, H = 0, raf = 0;
+    const net = window.NetBG ? NetBG() : null;
     const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
     function readColors() {
       cols = { a: css("--wall-a"), b: css("--wall-b"), c: css("--wall-c"), d: css("--wall-d"), base: css("--wall-base") };
-      tile = makeTile(isDark() ? "rgba(255,255,255,.05)" : "rgba(20,40,80,.06)");
       if (W) frame(reduced ? 0 : performance.now());
-    }
-    function makeTile(stroke) {
-      // eight-point star lattice, a nod to Persian tilework
-      const s = 96, t = document.createElement("canvas"); t.width = t.height = s;
-      const g = t.getContext("2d"); g.strokeStyle = stroke; g.lineWidth = 1;
-      const star = (cx, cy, r) => {
-        g.beginPath(); g.rect(cx - r, cy - r, 2 * r, 2 * r); g.stroke();
-        g.save(); g.translate(cx, cy); g.rotate(Math.PI / 4); g.beginPath(); g.rect(-r, -r, 2 * r, 2 * r); g.stroke(); g.restore();
-      };
-      star(s / 2, s / 2, 20); [0, s].forEach(x => [0, s].forEach(y => star(x, y, 20)));
-      return ctx.createPattern(t, "repeat");
     }
     function size() {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      net?.resize(W, H);
       if (reduced) frame(0);
     }
     function blob(x, y, r, col) {
@@ -1075,7 +1065,7 @@
       blob(W * (.6 + .1 * Math.sin(k * .7 + 2)), H * (.95 + .06 * Math.cos(k)), m * .45, cols.c);
       blob(W * (.35 + .1 * Math.cos(k * .9 + 1)), H * (.7 + .08 * Math.sin(k * 1.4)), m * .35, cols.d);
       ctx.globalAlpha = 1;
-      if (tile) { ctx.fillStyle = tile; ctx.fillRect(0, 0, W, H); }
+      net?.draw(ctx, t, isDark(), reduced);
     }
     let last = 0;
     function loop(t) {
